@@ -1,0 +1,110 @@
+---
+import { navItems, site } from "../data/site";
+
+const writingItem = navItems.find((item) => item.label === "Writing");
+const sectionItems = navItems.filter((item) => item.label !== "Writing" && item.label !== "CV");
+const writingEnabled = false;
+---
+
+<header class="sticky top-0 z-50 border-b border-slate-200/90 bg-white/82 backdrop-blur-xl">
+  <nav class="site-shell flex min-h-16 items-center justify-between gap-6" aria-label="Primary navigation">
+    <a href="/" class="text-sm font-semibold tracking-tight text-slate-950 sm:text-base">
+      {site.name}
+    </a>
+
+    <div class="hidden items-center gap-3 xl:gap-5 lg:flex">
+      {sectionItems.map((item) => (
+        <a class="text-sm font-medium text-slate-600 transition hover:text-sky-700 xl:text-[0.95rem]" href={item.href}>
+          {item.label}
+        </a>
+      ))}
+      <a
+        class="rounded-md bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-sky-200 transition hover:bg-sky-700"
+        href={site.cvUrl}
+        download
+      >
+        Download CV
+      </a>
+      {writingItem && writingEnabled ? (
+        <a
+          class="rounded-md border border-cyan-200 bg-cyan-50/80 px-4 py-2 text-sm font-semibold text-cyan-800 shadow-sm shadow-cyan-100/80 transition hover:border-cyan-300 hover:bg-cyan-100/80 hover:text-cyan-950"
+          href={writingItem.href}
+        >
+          {writingItem.label}
+        </a>
+      ) : (
+        <span
+          class="cursor-not-allowed rounded-md border border-slate-200 bg-slate-100/80 px-4 py-2 text-sm font-semibold text-slate-400"
+          aria-disabled="true"
+          title="Writing page coming soon"
+        >
+          Writing
+        </span>
+      )}
+    </div>
+
+    <button
+      class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-300 text-slate-700 transition hover:border-sky-500 hover:text-sky-700 lg:hidden"
+      type="button"
+      aria-label="Open navigation menu"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+      data-menu-button
+    >
+      <span class="sr-only">Menu</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+  </nav>
+
+  <div id="mobile-menu" class="site-shell hidden pb-5 lg:hidden" data-mobile-menu>
+    <div class="grid gap-2 rounded-lg border border-slate-200 bg-white/96 p-3 shadow-xl shadow-sky-100/80">
+      {sectionItems.map((item) => (
+        <a class="rounded-md px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-sky-50 hover:text-sky-700" href={item.href}>
+          {item.label}
+        </a>
+      ))}
+      <a
+        class="mt-1 rounded-md bg-sky-600 px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-sky-700"
+        href={site.cvUrl}
+        download
+      >
+        Download CV
+      </a>
+      {writingItem && writingEnabled ? (
+        <a
+          class="rounded-md border border-cyan-200 bg-cyan-50/80 px-3 py-2 text-center text-sm font-semibold text-cyan-800 transition hover:border-cyan-300 hover:bg-cyan-100/80 hover:text-cyan-950"
+          href={writingItem.href}
+        >
+          {writingItem.label}
+        </a>
+      ) : (
+        <span
+          class="cursor-not-allowed rounded-md border border-slate-200 bg-slate-100/80 px-3 py-2 text-center text-sm font-semibold text-slate-400"
+          aria-disabled="true"
+        >
+          Writing
+        </span>
+      )}
+    </div>
+  </div>
+</header>
+
+<script>
+  const menuButton = document.querySelector("[data-menu-button]");
+  const mobileMenu = document.querySelector("[data-mobile-menu]");
+
+  menuButton?.addEventListener("click", () => {
+    const isExpanded = menuButton.getAttribute("aria-expanded") === "true";
+    menuButton.setAttribute("aria-expanded", String(!isExpanded));
+    mobileMenu?.classList.toggle("hidden", isExpanded);
+  });
+
+  mobileMenu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      menuButton?.setAttribute("aria-expanded", "false");
+      mobileMenu.classList.add("hidden");
+    });
+  });
+</script>

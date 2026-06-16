@@ -1,0 +1,259 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import ExperienceTimeline from "../components/ExperienceTimeline.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import Badge from "../components/Badge.astro";
+import Footer from "../components/Footer.astro";
+import {
+  education,
+  experience,
+  featuredPublications,
+  profileHighlights,
+  projects,
+  researchLinks,
+  researchThemes,
+  scholarMetrics,
+  site,
+  teachingHighlights,
+  thesis,
+} from "../data/site";
+---
+
+<BaseLayout>
+  <Navbar />
+  <main>
+    <Hero />
+
+    <section id="about" class="border-b border-slate-200/90 bg-white py-20 sm:py-24">
+      <div class="site-shell grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+        <SectionHeading eyebrow="About" title="Research Depth, Production Delivery." />
+        <div class="space-y-6 text-base leading-8 text-slate-600 sm:text-lg">
+          <p>
+            I’m a Data Scientist based in Victoria, Australia, working at the intersection of applied AI research and production enterprise systems. My work spans data science, machine learning, Generative AI, analytics platforms, and cloud-based AI delivery.
+          </p>
+          <p>
+            My background combines a PhD in Artificial Intelligence, published research in energy-efficient machine learning, and hands-on delivery of production-grade AI and analytics systems across telecommunications, energy, transportation, and healthcare.
+          </p>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {profileHighlights.map((highlight) => (
+              <article class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm shadow-sky-100/70">
+                <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
+                  {highlight.label}
+                </p>
+                <h3 class="mt-3 text-base font-semibold leading-6 text-slate-950">{highlight.title}</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">{highlight.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience" class="border-b border-slate-200/90 bg-[#f8fbff] py-20 sm:py-24">
+      <div class="site-shell">
+        <SectionHeading
+          eyebrow="Experience"
+          title="Applied AI, Research, and Analytics delivery across Industry and Academia."
+          description="Current and recent roles across PS Hummingbird, La Trobe University, Telstra, and the CDAC."
+        />
+        <ExperienceTimeline items={experience} />
+      </div>
+    </section>
+
+    <section id="work" class="border-b border-slate-200/90 bg-white py-20 sm:py-24">
+      <div class="site-shell">
+        <SectionHeading
+          eyebrow="Selected Work"
+          title="High-impact AI and Data Systems."
+          description="Representative project themes across Azure-native agentic AI, enterprise GenAI enablement, and energy analytics platforms."
+        />
+        <div class="mt-12 grid gap-5 lg:grid-cols-3">
+          {projects.map((project) => (
+            <ProjectCard title={project.title} role={project.role} description={project.description} tags={project.tags} />
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="research" class="border-b border-slate-200/90 bg-[#eef7ff] py-20 sm:py-24">
+      <div class="site-shell">
+        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <SectionHeading
+            eyebrow="Research"
+            title="Applied AI research with a production mindset."
+            description="Research areas include Sparse AI, Sparse Distributed Representations, Vector Symbolic Architectures, energy-efficient machine learning, and forecasting."
+          />
+          <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-3">
+            {scholarMetrics.map((metric) => (
+              <article class="rounded-lg border border-slate-200 bg-white/88 p-5 shadow-sm shadow-sky-100/70">
+                <p class="text-3xl font-semibold tracking-tight text-sky-700">{metric.value}</p>
+                <h3 class="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-slate-800">{metric.label}</h3>
+                <p class="mt-3 text-sm leading-6 text-slate-600">{metric.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+          <a class="rounded-md bg-sky-600 px-5 py-3 text-center text-sm font-semibold text-white shadow-sm shadow-sky-200 transition hover:bg-sky-700" href={site.links.scholar} target="_blank" rel="noreferrer">
+            Google Scholar
+          </a>
+          <a class="rounded-md border border-slate-300 bg-white/70 px-5 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-sky-400 hover:text-sky-800" href={researchLinks.publications} target="_blank" rel="noreferrer">
+            Publications
+          </a>
+          <a class="rounded-md border border-slate-300 bg-white/70 px-5 py-3 text-center text-sm font-semibold text-slate-700 transition hover:border-sky-400 hover:text-sky-800" href={thesis.url} target="_blank" rel="noreferrer">
+            Thesis
+          </a>
+        </div>
+
+        <div class="mt-12 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+          <article class="rounded-lg border border-slate-200 bg-white/90 p-6 shadow-lg shadow-sky-100/70">
+            <div class="flex flex-wrap items-center gap-3">
+              <Badge text="PhD Thesis" />
+              <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                DOI {thesis.doi}
+              </span>
+            </div>
+            <h3 class="mt-5 text-2xl font-semibold tracking-tight text-slate-950">{thesis.title}</h3>
+            <p class="mt-4 text-sm leading-7 text-slate-600">{thesis.description}</p>
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-md border border-slate-200 bg-sky-50/50 p-4">
+                <dt class="font-mono text-xs uppercase tracking-[0.14em] text-slate-500">Degree</dt>
+                <dd class="mt-2 text-sm font-semibold text-slate-800">{thesis.degree}</dd>
+              </div>
+              <div class="rounded-md border border-slate-200 bg-sky-50/50 p-4">
+                <dt class="font-mono text-xs uppercase tracking-[0.14em] text-slate-500">Institution</dt>
+                <dd class="mt-2 text-sm font-semibold text-slate-800">{thesis.institution}</dd>
+              </div>
+              <div class="rounded-md border border-slate-200 bg-sky-50/50 p-4">
+                <dt class="font-mono text-xs uppercase tracking-[0.14em] text-slate-500">School</dt>
+                <dd class="mt-2 text-sm font-semibold text-slate-800">{thesis.school}</dd>
+              </div>
+              <div class="rounded-md border border-slate-200 bg-sky-50/50 p-4">
+                <dt class="font-mono text-xs uppercase tracking-[0.14em] text-slate-500">Year Awarded</dt>
+                <dd class="mt-2 text-sm font-semibold text-slate-800">{thesis.yearAwarded}</dd>
+              </div>
+            </dl>
+            <div class="mt-6 flex flex-wrap gap-2">
+              {thesis.subjects.map((subject) => (
+                <Badge text={subject} />
+              ))}
+            </div>
+          </article>
+
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            {researchThemes.map((theme) => (
+              <article class="rounded-lg border border-slate-200 bg-white/82 p-5 shadow-sm shadow-sky-100/70">
+                <h3 class="text-base font-semibold text-slate-950">{theme.title}</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">{theme.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div class="mt-12">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Featured Publications</p>
+              <h3 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Research outputs spanning Sparse AI and energy systems.</h3>
+            </div>
+          </div>
+          <div class="mt-6 grid gap-5 lg:grid-cols-3">
+            {featuredPublications.map((publication) => (
+              <article class="rounded-lg border border-slate-200 bg-white/88 p-6 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:shadow-md hover:shadow-sky-100">
+                <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">{publication.year} - {publication.venue}</p>
+                <h4 class="mt-4 text-lg font-semibold leading-7 tracking-tight text-slate-950">{publication.title}</h4>
+                <p class="mt-4 text-sm leading-7 text-slate-600">{publication.description}</p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {publication.tags.map((tag) => (
+                    <Badge text={tag} />
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div class="mt-12 rounded-lg border border-slate-200 bg-white/82 p-6 shadow-lg shadow-sky-100/70">
+          <h3 class="text-xl font-semibold tracking-tight text-slate-950">Education</h3>
+          <div class="mt-6 grid gap-4 lg:grid-cols-3">
+            {education.map((item) => (
+              <article class="rounded-md border border-slate-200 bg-sky-50/50 p-4">
+                <p class="text-sm font-semibold text-sky-700">{item.institution}</p>
+                <p class="mt-3 text-sm leading-6 text-slate-700">{item.degree}</p>
+                <p class="mt-3 font-mono text-xs uppercase tracking-[0.14em] text-slate-500">{item.period}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="teaching" class="border-b border-slate-200/90 bg-white py-20 sm:py-24">
+      <div class="site-shell">
+        <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+          <SectionHeading
+            eyebrow="Teaching"
+            title="Postgraduate teaching across AI, analytics, and cloud platforms."
+            description="Sessional academic work focused on practical, implementation-oriented learning for data, analytics, artificial intelligence, and hyperautomation topics."
+          />
+          <div class="grid gap-5">
+            {teachingHighlights.map((item) => (
+              <article class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:shadow-md hover:shadow-sky-100">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">{item.period}</p>
+                    <h3 class="mt-3 text-xl font-semibold tracking-tight text-slate-950">{item.title}</h3>
+                    <p class="mt-2 text-sm font-semibold text-slate-600">{item.institution}</p>
+                  </div>
+                </div>
+                <p class="mt-4 text-sm leading-7 text-slate-600">{item.description}</p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {item.tags.map((tag) => (
+                    <Badge text={tag} />
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="bg-[#eef7ff] py-20 sm:py-24">
+      <div class="site-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <SectionHeading
+          eyebrow="Contact"
+          title="Consulting, collaboration, and technical discussions."
+          description="For consulting, collaboration, or technical discussions, feel free to get in touch."
+        />
+        <div class="grid gap-3 sm:grid-cols-2">
+          <a class="rounded-lg border border-slate-200 bg-white/88 p-5 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:text-sky-800" href={site.links.email}>
+            <span class="block font-mono text-xs uppercase tracking-[0.16em] text-slate-500">Email</span>
+            <span class="mt-2 block text-lg font-semibold text-slate-950">Send an email</span>
+            <span class="mt-2 block text-sm leading-6 text-slate-600">Best for consulting, collaboration, or technical conversations.</span>
+          </a>
+          <a class="rounded-lg border border-slate-200 bg-white/88 p-5 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:text-sky-800" href={site.links.linkedin} target="_blank" rel="noreferrer">
+            <span class="block font-mono text-xs uppercase tracking-[0.16em] text-slate-500">LinkedIn</span>
+            <span class="mt-2 block text-lg font-semibold text-slate-950">Connect on LinkedIn</span>
+            <span class="mt-2 block text-sm leading-6 text-slate-600">Professional updates, consulting context, and collaboration.</span>
+          </a>
+          <a class="rounded-lg border border-slate-200 bg-white/88 p-5 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:text-sky-800" href={site.links.github} target="_blank" rel="noreferrer">
+            <span class="block font-mono text-xs uppercase tracking-[0.16em] text-slate-500">GitHub</span>
+            <span class="mt-2 block text-lg font-semibold text-slate-950">View GitHub</span>
+            <span class="mt-2 block text-sm leading-6 text-slate-600">Code, experiments, and technical project work.</span>
+          </a>
+          <a class="rounded-lg border border-slate-200 bg-white/88 p-5 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:text-sky-800" href={site.links.latrobe} target="_blank" rel="noreferrer">
+            <span class="block font-mono text-xs uppercase tracking-[0.16em] text-slate-500">La Trobe Scholars</span>
+            <span class="mt-2 block text-lg font-semibold text-slate-950">Academic collaboration</span>
+            <span class="mt-2 block text-sm leading-6 text-slate-600">Research, education, supervision, and university collaboration context.</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

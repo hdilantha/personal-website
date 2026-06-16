@@ -1,0 +1,14 @@
+---
+import { site } from "../data/site";
+---
+
+<footer class="border-t border-slate-200 bg-white">
+  <div class="site-shell flex flex-col gap-4 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+    <p>© 2026 {site.name}. Built with Astro.</p>
+    <div class="flex gap-4">
+      <a class="transition hover:text-sky-700" href={site.links.linkedin}>LinkedIn</a>
+      <a class="transition hover:text-sky-700" href={site.links.github}>GitHub</a>
+      <a class="transition hover:text-sky-700" href={site.links.scholar}>Google Scholar</a>
+    </div>
+  </div>
+</footer>
