@@ -2,10 +2,9 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Navbar from "../../components/Navbar.astro";
-import SectionHeading from "../../components/SectionHeading.astro";
 import Badge from "../../components/Badge.astro";
 import Footer from "../../components/Footer.astro";
-import { site, writingPlaceholders } from "../../data/site";
+import { site, writingPlaceholders, writingTopics } from "../../data/site";
 
 const posts = (await getCollection("writing"))
   .filter((post) => !post.data.draft)
@@ -15,81 +14,191 @@ const posts = (await getCollection("writing"))
     return bDate - aDate;
   });
 
+const featuredPost = posts.find((post) => post.data.featured) ?? posts[0];
+const remainingPosts = featuredPost ? posts.filter((post) => post.id !== featuredPost.id) : posts;
+const plannedFeatured = writingPlaceholders[0];
+const plannedPosts = writingPlaceholders.slice(1);
+
 const formatDate = (date?: Date) =>
   date?.toLocaleDateString("en-AU", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
+
+const getSlug = (id: string) => id.replace(/\.(md|mdx)$/, "");
 ---
 
 <BaseLayout
   title={`Writing | ${site.name}`}
-  description="Notes and essays by Dilantha Haputhanthri on production AI, Azure architecture, RAG, agentic workflows, and energy-efficient AI."
+  description="Technical essays and field notes by Dilantha Haputhanthri on production AI, Azure architecture, RAG, agentic workflows, and energy-efficient AI."
 >
   <Navbar />
   <main>
-    <section class="border-b border-slate-200/90 bg-[#eef7ff] py-20 sm:py-24">
+    <section class="border-b border-slate-200/90 bg-[#eef7ff] py-16 sm:py-20">
       <div class="site-shell">
-        <div class="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
-          <SectionHeading
-            eyebrow="Writing"
-            title="Notes on applied AI, Azure architecture, and research-to-production practice."
-            description="A dedicated space for technical writing, architecture notes, and practical reflections from AI research and enterprise delivery."
-          />
-          <div class="rounded-lg border border-slate-200 bg-white/88 p-6 shadow-lg shadow-sky-100/70">
-            <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Focus Areas</p>
-            <div class="mt-5 flex flex-wrap gap-2">
-              <Badge text="Production AI" />
-              <Badge text="Azure AI" />
-              <Badge text="Enterprise RAG" />
-              <Badge text="Agentic Workflows" />
-              <Badge text="LLM Evaluation" />
-              <Badge text="Sparse AI" />
-            </div>
+        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div>
+            <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Writing</p>
+            <h1 class="mt-4 max-w-4xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
+              Technical notes on building useful AI systems.
+            </h1>
+            <p class="mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
+              Essays, architecture notes, and practical reflections across Azure AI, enterprise RAG, agentic workflows,
+              LLM evaluation, and the path from applied AI research to production delivery.
+            </p>
           </div>
+          <aside class="rounded-lg border border-slate-200 bg-white/88 p-6 shadow-lg shadow-sky-100/70" aria-label="Writing focus areas">
+            <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Topics</p>
+            <div class="mt-5 flex flex-wrap gap-2">
+              {writingTopics.map((topic) => (
+                <Badge text={topic} />
+              ))}
+            </div>
+          </aside>
         </div>
       </div>
     </section>
 
     <section class="border-b border-slate-200/90 bg-white py-16 sm:py-20">
       <div class="site-shell">
+        <div class="flex items-end justify-between gap-4">
+          <div>
+            <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Featured</p>
+            <h2 class="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+              {featuredPost ? "Latest essay" : "Planned lead essay"}
+            </h2>
+          </div>
+        </div>
+
         {
-          posts.length > 0 ? (
-            <div class="grid gap-5 md:grid-cols-2">
-              {posts.map((post) => (
-                <article class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:shadow-md hover:shadow-sky-100">
-                  <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">
-                    {formatDate(post.data.published) ?? "Published"}
-                  </p>
-                  <h2 class="mt-4 text-xl font-semibold tracking-tight text-slate-950">{post.data.title}</h2>
-                  <p class="mt-4 text-sm leading-7 text-slate-600">{post.data.description}</p>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div>
-              <div class="max-w-3xl">
-                <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Draft Queue</p>
-                <h2 class="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
-                  Planned essays and technical notes
-                </h2>
-                <p class="mt-4 text-base leading-7 text-slate-600">
-                  These are placeholder topics for future posts. Real articles can be added as Markdown or MDX files under
-                  <span class="font-mono text-sm text-slate-800"> src/content/writing</span>.
-                </p>
+          featuredPost ? (
+            <a
+              class="mt-8 block overflow-hidden rounded-lg border border-slate-200 bg-[#f8fbff] shadow-lg shadow-sky-100/70 transition hover:border-sky-300 hover:shadow-xl hover:shadow-sky-100/80"
+              href={`/writing/${getSlug(featuredPost.id)}/`}
+            >
+              {featuredPost.data.coverImage && (
+                <img
+                  src={featuredPost.data.coverImage}
+                  alt={featuredPost.data.coverAlt ?? ""}
+                  class="aspect-[2.7/1] w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              )}
+              <div class="p-7">
+                <div class="flex flex-wrap items-center gap-3">
+                  <Badge text={featuredPost.data.category} />
+                  <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    {formatDate(featuredPost.data.published) ?? "Published"}
+                  </span>
+                  {featuredPost.data.readTime && (
+                    <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                      {featuredPost.data.readTime}
+                    </span>
+                  )}
+                </div>
+                <h3 class="mt-6 text-3xl font-semibold tracking-tight text-slate-950">{featuredPost.data.title}</h3>
+                <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">{featuredPost.data.description}</p>
+                <div class="mt-6 flex flex-wrap gap-2">
+                  {featuredPost.data.tags.map((tag) => (
+                    <Badge text={tag} />
+                  ))}
+                </div>
               </div>
-              <div class="mt-10 grid gap-4 md:grid-cols-2">
-                {writingPlaceholders.map((post) => (
-                  <article class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-sky-100/70 transition hover:border-sky-300">
-                    <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Draft placeholder</p>
-                    <h3 class="mt-3 text-lg font-semibold text-slate-950">{post}</h3>
-                  </article>
+            </a>
+          ) : (
+            <article class="mt-8 rounded-lg border border-slate-200 bg-[#f8fbff] p-7 shadow-lg shadow-sky-100/70">
+              <div class="flex flex-wrap items-center gap-3">
+                <Badge text={plannedFeatured.category} />
+                <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Planned</span>
+                <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  {plannedFeatured.readTime}
+                </span>
+              </div>
+              <h3 class="mt-6 text-3xl font-semibold tracking-tight text-slate-950">{plannedFeatured.title}</h3>
+              <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">{plannedFeatured.description}</p>
+              <div class="mt-6 flex flex-wrap gap-2">
+                {plannedFeatured.tags.map((tag) => (
+                  <Badge text={tag} />
                 ))}
               </div>
-            </div>
+            </article>
           )
         }
+      </div>
+    </section>
+
+    <section class="bg-[#f8fbff] py-16 sm:py-20">
+      <div class="site-shell">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
+              {posts.length > 0 ? "All Essays" : "Draft Queue"}
+            </p>
+            <h2 class="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+              {posts.length > 0 ? "Published writing" : "Upcoming article topics"}
+            </h2>
+          </div>
+          <p class="max-w-xl text-sm leading-7 text-slate-600">
+            {posts.length > 0
+              ? "A growing collection of practical notes on AI delivery and applied research."
+              : "These are clearly marked placeholders so the blog has structure without implying unpublished articles already exist."}
+          </p>
+        </div>
+
+        <div class="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {
+            posts.length > 0 ? (
+              remainingPosts.map((post) => (
+                <a
+                  class="flex min-h-72 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:shadow-md hover:shadow-sky-100"
+                  href={`/writing/${getSlug(post.id)}/`}
+                >
+                  {post.data.coverImage && (
+                    <img
+                      src={post.data.coverImage}
+                      alt={post.data.coverAlt ?? ""}
+                      class="aspect-[16/9] w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
+                  <div class="flex flex-1 flex-col p-6">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <Badge text={post.data.category} />
+                      <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        {formatDate(post.data.published) ?? "Published"}
+                      </span>
+                    </div>
+                    <h3 class="mt-5 text-xl font-semibold leading-7 tracking-tight text-slate-950">{post.data.title}</h3>
+                    <p class="mt-4 text-sm leading-7 text-slate-600">{post.data.description}</p>
+                    <div class="mt-auto pt-6">
+                      <p class="text-sm font-semibold text-sky-700">Read essay</p>
+                    </div>
+                  </div>
+                </a>
+              ))
+            ) : (
+              plannedPosts.map((post) => (
+                <article class="flex min-h-72 flex-col rounded-lg border border-slate-200 bg-white p-6 shadow-sm shadow-sky-100/70 transition hover:border-sky-300">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <Badge text={post.category} />
+                    <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Planned</span>
+                    <span class="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{post.readTime}</span>
+                  </div>
+                  <h3 class="mt-5 text-xl font-semibold leading-7 tracking-tight text-slate-950">{post.title}</h3>
+                  <p class="mt-4 text-sm leading-7 text-slate-600">{post.description}</p>
+                  <div class="mt-auto flex flex-wrap gap-2 pt-6">
+                    {post.tags.map((tag) => (
+                      <Badge text={tag} />
+                    ))}
+                  </div>
+                </article>
+              ))
+            )
+          }
+        </div>
       </div>
     </section>
   </main>

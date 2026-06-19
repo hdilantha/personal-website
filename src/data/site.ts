@@ -328,9 +328,46 @@ export const teachingHighlights = [
   },
 ] as const;
 
+export const writingTopics = [
+  "Production AI",
+  "Azure AI",
+  "Enterprise RAG",
+  "Agentic Workflows",
+  "LLM Evaluation",
+  "Sparse AI",
+] as const;
+
 export const writingPlaceholders = [
-  "From AI research to production AI systems",
-  "What matters when building enterprise RAG",
-  "Notes on Azure AI architecture",
-  "Sparse AI and energy-efficient machine learning",
+  {
+    title: "From AI research to production AI systems",
+    description:
+      "Notes on translating research ideas into maintainable AI systems that survive real enterprise constraints.",
+    category: "Production AI",
+    readTime: "6 min read",
+    tags: ["Applied AI", "Architecture", "Delivery"],
+  },
+  {
+    title: "What matters when building enterprise RAG",
+    description:
+      "A practical breakdown of retrieval quality, evaluation, governance, citations, and workflow fit for enterprise RAG systems.",
+    category: "Enterprise RAG",
+    readTime: "8 min read",
+    tags: ["RAG", "LLM Evaluation", "Search"],
+  },
+  {
+    title: "Notes on Azure AI architecture",
+    description:
+      "Implementation notes on Azure-native AI systems, secure deployment patterns, DevOps, and production readiness.",
+    category: "Azure AI",
+    readTime: "7 min read",
+    tags: ["Azure OpenAI", "Azure AI Foundry", "DevOps"],
+  },
+  {
+    title: "Sparse AI and energy-efficient machine learning",
+    description:
+      "Reflections on Sparse Distributed Representations, Vector Symbolic Architectures, and efficient learning systems.",
+    category: "Sparse AI",
+    readTime: "9 min read",
+    tags: ["SDR", "VSA", "Energy-Efficient AI"],
+  },
 ] as const;

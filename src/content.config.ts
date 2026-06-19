@@ -8,6 +8,12 @@ const writing = defineCollection({
     title: z.string(),
     description: z.string(),
     published: z.coerce.date().optional(),
+    category: z.string().default("Writing"),
+    readTime: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    coverImage: z.string().optional(),
+    coverAlt: z.string().optional(),
+    featured: z.boolean().default(false),
     draft: z.boolean().default(true),
   }),
 });
