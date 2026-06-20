@@ -103,8 +103,8 @@ The update pipeline is deliberately split.
 
 Services emit two kinds of messages:
 
-- **status updates**, such as `summary_updated`, `analysis_updated`, `research_updated`, and `composition_updated`;
-- **step progress updates**, such as `analysis_step_progress`, `research_step_progress`, and `composition_step_progress`.
+- **status updates**, such as `ai_job_type_1_updated`, `ai_job_type_2_updated`, and `ai_job_type_3_updated`;
+- **step progress updates**, such as `ai_job_step_1_progress`, `ai_job_step_2_progress`, and `ai_job_step_3_progress`.
 
 The backend publishes these messages to Redis channels keyed by workspace:
 
