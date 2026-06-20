@@ -70,4 +70,85 @@ const formatDate = (date?: Date) =>
     </article>
   </main>
   <Footer />
+
+  <div
+    class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/90 p-4 backdrop-blur-sm"
+    data-image-lightbox
+    role="dialog"
+    aria-modal="true"
+    aria-label="Enlarged image viewer"
+  >
+    <button
+      class="absolute right-4 top-4 rounded-md border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-white"
+      type="button"
+      data-lightbox-close
+    >
+      Close
+    </button>
+    <img
+      class="max-h-[88vh] max-w-[95vw] rounded-lg border border-white/15 bg-white object-contain shadow-2xl"
+      src=""
+      alt=""
+      data-lightbox-image
+    />
+  </div>
+
+<script>
+  const lightbox = document.querySelector<HTMLElement>("[data-image-lightbox]");
+  const lightboxImage = document.querySelector<HTMLImageElement>("[data-lightbox-image]");
+  const closeButton = document.querySelector<HTMLButtonElement>("[data-lightbox-close]");
+  const triggers = document.querySelectorAll<HTMLImageElement>(".article-content img");
+
+  const openLightbox = (image: HTMLImageElement) => {
+    if (!lightbox || !lightboxImage) return;
+
+    lightboxImage.src = image.currentSrc || image.src;
+    lightboxImage.alt = image.alt;
+    lightbox.classList.remove("hidden");
+    lightbox.classList.add("flex");
+    document.body.style.overflow = "hidden";
+    closeButton?.focus();
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox || !lightboxImage) return;
+
+    lightbox.classList.add("hidden");
+    lightbox.classList.remove("flex");
+    lightboxImage.src = "";
+    document.body.style.overflow = "";
+  };
+
+  triggers.forEach((image) => {
+    if (!image.parentElement?.classList.contains("image-zoom-frame")) {
+      const wrapper = document.createElement("span");
+      wrapper.className = "image-zoom-frame";
+      image.parentElement?.insertBefore(wrapper, image);
+      wrapper.appendChild(image);
+    }
+
+    image.setAttribute("role", "button");
+    image.setAttribute("tabindex", "0");
+    image.setAttribute("title", "Click to enlarge");
+    image.setAttribute("aria-label", image.alt ? `Click to enlarge: ${image.alt}` : "Click to enlarge image");
+
+    image.addEventListener("click", () => openLightbox(image));
+    image.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openLightbox(image);
+      }
+    });
+  });
+
+  closeButton?.addEventListener("click", closeLightbox);
+  lightbox?.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && lightbox && !lightbox.classList.contains("hidden")) {
+      closeLightbox();
+    }
+  });
+</script>
 </BaseLayout>

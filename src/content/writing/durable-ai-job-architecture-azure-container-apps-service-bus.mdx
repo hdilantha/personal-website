@@ -1,0 +1,196 @@
+---
+title: "Building a Durable AI Job Architecture on Azure Container Apps and Service Bus"
+description: "A production-oriented architecture pattern for long-running AI jobs using Azure Service Bus, Azure Container Apps, Cosmos DB, Redis, WebSockets, and REST hydration."
+published: 2026-06-20
+category: "Azure AI Architecture"
+readTime: "12 min read"
+tags: ["Azure Container Apps", "Service Bus", "AI Workflows", "Redis", "Cosmos DB"]
+coverImage: "/writing/durable-ai-jobs/durable-ai-cover.png"
+coverAlt: "Cloud-native container workflow illustration with connected job queues and container workloads"
+featured: true
+draft: false
+---
+
+Long-running AI workflows do not fit neatly inside HTTP request/response APIs.
+
+As soon as an AI feature moves from demo to production, background execution becomes an architecture decision. Generating a complex document section can take minutes. It may call multiple agents, read source documents, update intermediate progress, consume significant model capacity, and still need to be cancellable from the browser.
+
+Keeping that work outside the web request keeps the API responsive and lets the worker tier scale around the shape of the AI workload.
+
+The architecture separates those concerns. The API accepts user intent and persists state. Azure Service Bus stores durable work commands. Azure Container Apps runs the AI worker fleet. Cosmos DB remains the source of truth. Redis and WebSockets deliver live progress to the frontend.
+
+The design is useful because it treats AI generation as a distributed workflow, not just a function call.
+
+## The core pattern
+
+The architecture uses three different communication paths, each for a different job:
+
+- **Service Bus is the durable command plane.** It stores "run this AI job" messages until a worker can process them.
+- **Cosmos DB is the source of truth.** Job status, progress, generated content, step output, errors, and timestamps are persisted there.
+- **Redis Pub/Sub and WebSockets are the live signal plane.** They provide fast, best-effort progress updates to connected browsers.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/ai-architecture.png" alt="Durable AI architecture showing React SPA, FastAPI API, Service Bus job queues, Container Apps worker, Cosmos DB, Redis, and WebSocket gateway" />
+  <figcaption>Core architecture: durable command, persisted state, scalable worker execution, and live progress signals.</figcaption>
+</figure>
+
+The important detail is that the browser does not trust WebSocket messages as the source of truth. It uses them as hints. On completion, error, or cancellation, it rehydrates the full record over REST.
+
+That gives the system the responsiveness users expect without making the live message channel responsible for correctness.
+
+## Why Container Apps for the worker?
+
+The API and worker share the same service layer, but they run in different processes with different scaling behavior.
+
+The API runs on Azure App Service and handles CRUD, chat, authentication, and WebSocket connections. The worker runs as an Azure Container App and only does background AI generation. The worker image is built from a dedicated Dockerfile and deployed independently from the API.
+
+The Container App is configured with:
+
+- a dedicated Container Apps managed environment;
+- a user-assigned managed identity for ACR pulls and Key Vault access;
+- CPU and memory sized for large document and LangGraph workloads;
+- a long termination grace period for shutdown handling;
+- KEDA rules that scale from Service Bus queue depth;
+- queue names and Azure OpenAI routing settings injected as environment variables.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/deployment-topology.png" alt="Azure network architecture with web subnet, Container Apps subnet, private endpoint data subnet, and Azure Container Registry" />
+  <figcaption>Runtime topology: API and worker scaling are independent, while data services stay behind private boundaries.</figcaption>
+</figure>
+
+This split means API scaling and worker scaling can be tuned independently. A burst of users connecting to the app does not automatically start more model calls. A burst of queued AI jobs can scale the worker fleet without increasing the web tier.
+
+## Queue design
+
+The system uses separate Service Bus queues for major AI capabilities.
+
+The queues use duplicate detection, a five-minute lock duration, dead-lettering on expiration, and a maximum delivery count. The worker uses Service Bus lock renewal because AI jobs can run longer than the initial message lock.
+
+The worker starts one async processor loop per configured queue. All queues share a single per-replica semaphore, so one worker instance cannot overload Azure OpenAI or exhaust memory by running too many workflows concurrently.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/queue-concurrency.png" alt="Four Service Bus queues feeding four worker loops protected by one shared async semaphore" />
+  <figcaption>Queue-level scale-out handles backlog, while per-replica concurrency protects model quota, memory, and downstream services.</figcaption>
+</figure>
+
+This is a practical pattern for AI workloads. Queue-level scale-out handles backlog, while per-replica concurrency protects model quota, memory, and downstream services.
+
+## Job lifecycle
+
+A single AI job follows this lifecycle:
+
+1. The frontend calls a generate endpoint.
+2. The API prepares a generation operation and writes `queued` status.
+3. The API sends a Service Bus message.
+4. A worker receives the message and renews the lock while processing.
+5. The worker updates the persisted record as it progresses.
+6. The worker publishes live progress events through Redis.
+7. The WebSocket gateway broadcasts events to connected browser sessions for the workspace.
+8. On success, error, or cancellation, the frontend rehydrates the full record over REST.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/job-lifecycle.png" alt="Sequence diagram for an AI job lifecycle across React SPA, FastAPI API, Cosmos DB, Service Bus, Container Apps worker, Redis Pub/Sub, and WebSocket gateway" />
+  <figcaption>Job lifecycle: immediate acceptance, durable execution, live progress hints, and final REST hydration.</figcaption>
+</figure>
+
+When processing needs to be retried, the worker abandons the message instead of completing it. Service Bus then redelivers the message under the queue's delivery policy, with dead-letter handling available for operational review.
+
+If the worker is shutting down, it abandons in-flight messages so another replica can pick them up after the lock expires. That behavior matters during rolling deployments.
+
+## Live updates without making WebSockets the database
+
+The update pipeline is deliberately split.
+
+Services emit two kinds of messages:
+
+- **status updates**, such as `summary_updated`, `analysis_updated`, `research_updated`, and `composition_updated`;
+- **step progress updates**, such as `analysis_step_progress`, `research_step_progress`, and `composition_step_progress`.
+
+The backend publishes these messages to Redis channels keyed by workspace:
+
+```text
+websocket:workspace:{workspace_id}
+```
+
+Every API instance that has a browser connected for that workspace subscribes to the channel. When a message arrives, the API instance rebroadcasts it only to its local WebSocket connections for that workspace.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/live-updates.png" alt="Redis Pub/Sub forwarding workspace-scoped progress events to API instances with local browser sockets" />
+  <figcaption>Redis Pub/Sub keeps live progress fast, while meaningful state transitions are still persisted.</figcaption>
+</figure>
+
+On reconnect, or after a terminal update, the frontend calls the REST API and hydrates the latest state.
+
+The frontend also protects itself from race conditions. Terminal events include `updated_at`, and hydration responses are compared against the current browser record. If an older REST response arrives after a newer WebSocket update, the frontend keeps the newer state.
+
+This "event as hint, database as truth" rule is one of the most important parts of the design.
+
+## Cancellation
+
+Cancellation is handled as a distributed control signal.
+
+When the user cancels a job, the API:
+
+1. marks the persisted record as cancelled;
+2. writes a cancellation key in Redis;
+3. includes the operation ID where supported, so stale work can be distinguished from the current generation;
+4. emits a terminal update to the frontend.
+
+The worker checks the persisted row and the Redis cancellation key between steps. If cancellation is detected, it stops the workflow, writes cancelled state, emits an update, and clears the cancellation key.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/cancellation.png" alt="Cancellation sequence across React SPA, FastAPI API, Cosmos DB, Redis, Worker, and WebSocket Gateway" />
+  <figcaption>Cancellation is both persisted for correctness and signalled through Redis for fast worker checks.</figcaption>
+</figure>
+
+Operation IDs are important. Without them, a cancellation from an older generation can accidentally affect a newer retry. With operation-scoped cancellation, workers can skip stale messages safely.
+
+## Dependency-gated batch analysis
+
+The most interesting workflow is dependency-gated batch generation.
+
+Some generated sections depend on others. Dependency gating lets the system run the available sections immediately while holding dependent sections until their inputs are ready.
+
+At batch start, the API resolves the dependency graph and enqueues only sections whose dependencies are already satisfied. As each section reaches a terminal state, the worker updates batch state in Redis. If that completion unblocks dependent sections, the service atomically takes those newly unblocked sections and enqueues them to Service Bus.
+
+<figure>
+  <img src="/writing/durable-ai-jobs/dependency-gating.png" alt="Dependency-gated batch generation with dependency graph and sequence flow through API, Redis batch state, Service Bus, and workers" />
+  <figcaption>Dependency gating runs available sections immediately and atomically enqueues newly unblocked sections.</figcaption>
+</figure>
+
+The important implementation detail is that dependency bookkeeping uses an atomic "take and clear" update in Redis. That prevents two workers from double-enqueuing the same newly unblocked section.
+
+The enqueue handoff is also restaged in Redis when it needs another attempt, so dependency progress is not lost between workers. Service Bus duplicate detection provides another layer of protection for partial-send ambiguity.
+
+## What this architecture enables
+
+The result is a system where each runtime has a clear responsibility.
+
+The browser can reconnect and hydrate from persisted state while the job keeps running independently in the worker fleet.
+
+API instances can scale and recycle independently because queued work remains in Service Bus and browser WebSocket sessions can reconnect to any healthy instance.
+
+Workers can be rolled forward safely because in-flight messages are abandoned and redelivered through Service Bus.
+
+Live progress stays fast through Redis Pub/Sub, while Cosmos DB holds the recoverable state for every meaningful transition.
+
+Operation IDs let the worker distinguish the current generation from older queued work, so user retries and regenerations remain predictable.
+
+This is the difference between "we run a background task" and "we operate an AI workflow system."
+
+## The broader lesson
+
+Production AI systems need more than model calls. They need workflow boundaries.
+
+Azure Service Bus gives durable work orchestration. Azure Container Apps gives a scalable worker runtime. Cosmos DB gives recoverable state. Redis Pub/Sub and WebSockets give users a live experience. REST hydration keeps the browser aligned with the persisted source of truth.
+
+That combination is the architecture pattern worth reusing:
+
+<figure>
+  <img src="/writing/durable-ai-jobs/reusable-pattern.png" alt="Reusable durable AI workflow pattern from user intent to durable command, scalable execution, durable state, live signal, and responsive UI" />
+  <figcaption>The reusable pattern: durable work, scalable execution, visible progress, safe retries, explicit cancellation, and boring recovery.</figcaption>
+</figure>
+
+For long-running AI jobs, the goal is not to make everything synchronous or perfectly real time. The goal is to make work durable, progress visible, retries safe, cancellation explicit, and recovery boring.
+
+That is what this architecture gets right.
