@@ -7,7 +7,7 @@ readTime: "12 min read"
 tags: ["Azure Container Apps", "Service Bus", "AI Workflows", "Redis", "Cosmos DB"]
 coverImage: "/writing/durable-ai-jobs/durable-ai-cover.png"
 coverAlt: "Cloud-native container workflow illustration with connected job queues and container workloads"
-featured: true
+featured: false
 draft: false
 ---
 
@@ -46,12 +46,12 @@ The API runs on Azure App Service and handles CRUD, chat, authentication, and We
 
 The Container App is configured with:
 
-- a dedicated Container Apps managed environment;
-- a user-assigned managed identity for ACR pulls and Key Vault access;
+- A dedicated Container Apps managed environment;
+- A user-assigned managed identity for ACR pulls and Key Vault access;
 - CPU and memory sized for large document and LangGraph workloads;
-- a long termination grace period for shutdown handling;
+- A long termination grace period for shutdown handling;
 - KEDA rules that scale from Service Bus queue depth;
-- queue names and Azure OpenAI routing settings injected as environment variables.
+- Queue names and Azure OpenAI routing settings injected as environment variables.
 
 <figure>
   <img src="/writing/durable-ai-jobs/deployment-topology.png" alt="Azure network architecture with web subnet, Container Apps subnet, private endpoint data subnet, and Azure Container Registry" />

@@ -59,6 +59,16 @@ export const projects = [
     description:
       "Designed and delivered a production Azure-native multi-agent AI solution to automate core urban planning workflows, including Azure architecture design, Azure DevOps setup, production deployment approach, and agentic workflow implementation.",
     tags: ["Azure OpenAI", "Azure AI Foundry", "Agentic AI", "Multi-Agent Systems", "Azure DevOps"],
+    relatedPosts: [
+      {
+        title: "Building a Durable AI Job Architecture on Azure Container Apps and Service Bus",
+        href: "/writing/durable-ai-job-architecture-azure-container-apps-service-bus/",
+      },
+      {
+        title: "Deploying to a Private Azure App Service from Azure DevOps with Managed DevOps Pools",
+        href: "/writing/deploying-private-azure-app-service-from-azure-devops-managed-devops-pools/",
+      },
+    ],
   },
   {
     title: "Enterprise GenAI Enablement",
@@ -73,6 +83,20 @@ export const projects = [
     description:
       "Led solar generation analytics and machine learning pipeline development for an energy analytics platform, supporting forecasting, performance monitoring, and net-zero decision-making.",
     tags: ["Energy Analytics", "Forecasting", "Machine Learning", "Solar Generation", "Net-Zero Analytics"],
+    relatedPublications: [
+      {
+        title: "Unisolar: An open dataset of photovoltaic solar energy generation in a large multi-campus university setting",
+        href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=c7cb-jAAAAAJ&citation_for_view=c7cb-jAAAAAJ:Y0pCki6q_DkC",
+      },
+      {
+        title: "Solar irradiance nowcasting for virtual power plants using multimodal long short-term memory networks",
+        href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=c7cb-jAAAAAJ&citation_for_view=c7cb-jAAAAAJ:UeHWp8X0CEIC",
+      },
+      {
+        title: "Solar power forecasting with sparse deep learning for fast frequency response ancillary services",
+        href: "https://scholar.google.com/citations?view_op=view_citation&hl=en&user=c7cb-jAAAAAJ&citation_for_view=c7cb-jAAAAAJ:_FxGoFyzp5QC",
+      },
+    ],
   },
 ] as const;
 
@@ -249,7 +273,7 @@ export const featuredPublications = [
 
 export const scholarMetrics = [
   {
-    value: "532",
+    value: "535",
     label: "Citations",
     description: "Current Google Scholar cited-by count.",
   },

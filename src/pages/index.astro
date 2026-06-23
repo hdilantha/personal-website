@@ -72,7 +72,14 @@ import {
         />
         <div class="mt-12 grid gap-5 lg:grid-cols-3">
           {projects.map((project) => (
-            <ProjectCard title={project.title} role={project.role} description={project.description} tags={project.tags} />
+            <ProjectCard
+              title={project.title}
+              role={project.role}
+              description={project.description}
+              tags={project.tags}
+              relatedPosts={"relatedPosts" in project ? project.relatedPosts : undefined}
+              relatedPublications={"relatedPublications" in project ? project.relatedPublications : undefined}
+            />
           ))}
         </div>
       </div>
