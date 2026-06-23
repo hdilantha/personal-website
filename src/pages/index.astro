@@ -90,7 +90,7 @@ import {
         <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <SectionHeading
             eyebrow="Research"
-            title="Applied AI research with a production mindset."
+            title="Sparsity for Energy-Efficient AI."
             description="Research areas include Sparse AI, Sparse Distributed Representations, Vector Symbolic Architectures, energy-efficient machine learning, and forecasting."
           />
           <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-3">
@@ -165,13 +165,20 @@ import {
           <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Featured Publications</p>
-              <h3 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Research outputs spanning Sparse AI and energy systems.</h3>
+              <h3 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Research Outputs spanning Sparse AI and Energy Systems.</h3>
             </div>
           </div>
           <div class="mt-6 grid gap-5 lg:grid-cols-3">
             {featuredPublications.map((publication) => (
-              <article class="rounded-lg border border-slate-200 bg-white/88 p-6 shadow-sm shadow-sky-100/70 transition hover:border-sky-300 hover:shadow-md hover:shadow-sky-100">
-                <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-sky-700">{publication.year} - {publication.venue}</p>
+              <article class="flex h-full flex-col rounded-lg border border-slate-200 bg-white/88 p-6 shadow-sm shadow-sky-100/70">
+                <div class="font-mono text-xs font-semibold uppercase tracking-[0.14em]">
+                  <p class="min-h-10 leading-5 text-sky-700">{publication.year} - {publication.venue}</p>
+                  <p class="mt-2 leading-5 text-slate-600">
+                    CiteScore {publication.metrics.citeScore}
+                    <span class="text-slate-400"> · </span>
+                    Impact Factor {publication.metrics.impactFactor}
+                  </p>
+                </div>
                 <h4 class="mt-4 text-lg font-semibold leading-7 tracking-tight text-slate-950">{publication.title}</h4>
                 <p class="mt-4 text-sm leading-7 text-slate-600">{publication.description}</p>
                 <div class="mt-5 flex flex-wrap gap-2">
@@ -179,6 +186,14 @@ import {
                     <Badge text={tag} />
                   ))}
                 </div>
+                <a
+                  class="publication-paper-link mt-auto inline-flex pt-6 text-sm font-semibold"
+                  href={publication.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View paper
+                </a>
               </article>
             ))}
           </div>
@@ -204,7 +219,7 @@ import {
         <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <SectionHeading
             eyebrow="Teaching"
-            title="Postgraduate teaching across AI, analytics, and cloud platforms."
+            title="Postgraduate Teaching across AI, Analytics, and Cloud Platforms."
             description="Sessional academic work focused on practical, implementation-oriented learning for data, analytics, artificial intelligence, and hyperautomation topics."
           />
           <div class="grid gap-5">
@@ -234,7 +249,7 @@ import {
       <div class="site-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <SectionHeading
           eyebrow="Contact"
-          title="Consulting, collaboration, and technical discussions."
+          title="Consulting, Collaboration, and Technical Discussions."
           description="For consulting, collaboration, or technical discussions, feel free to get in touch."
         />
         <div class="grid gap-3 sm:grid-cols-2">

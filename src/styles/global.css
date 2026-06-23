@@ -183,6 +183,19 @@ a {
   text-align: center;
 }
 
+.publication-paper-link,
+.publication-paper-link:visited {
+  color: #0369a1;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.publication-paper-link:hover,
+.publication-paper-link:focus-visible {
+  color: #0f172a;
+  text-decoration: none;
+}
+
 .article-content code {
   border: 1px solid #e2e8f0;
   border-radius: 0.35rem;

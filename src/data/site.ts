@@ -218,7 +218,7 @@ export const thesis = {
   url: "https://doi.org/10.26181/32441283",
   description:
     "PhD thesis on Sparse Distributed Representations for energy-efficient AI, with research spanning vector data classification, manifold learning, Sparse Distributed Representations, Vector Symbolic Architectures, and sparse deep learning.",
-  subjects: ["Artificial intelligence", "Energy-efficient computing", "Artificial life and complex adaptive systems"],
+  subjects: ["Artificial Intelligence", "Hyperdimensional Computing", "Vector Symbolic Architectures", "Sparse Distributed Representations", "Sparse Deep Learning", "Energy-Efficient AI"],
 } as const;
 
 export const researchThemes = [
@@ -252,6 +252,11 @@ export const featuredPublications = [
     description:
       "Sparse Distributed Representation research focused on vector data classification and efficient representation learning.",
     tags: ["SDR", "Vector Classification", "Efficient AI"],
+    url: "https://www.sciencedirect.com/science/article/abs/pii/S0925231226005655",
+    metrics: {
+      citeScore: "10.8",
+      impactFactor: "6.7",
+    },
   },
   {
     title: "Solar power forecasting with sparse deep learning for fast frequency response ancillary services",
@@ -260,6 +265,11 @@ export const featuredPublications = [
     description:
       "Applied energy AI research using sparse deep learning for solar power forecasting and grid support use cases.",
     tags: ["Sparse Deep Learning", "Forecasting", "Energy Systems"],
+    url: "https://www.sciencedirect.com/science/article/pii/S0142061525011007",
+    metrics: {
+      citeScore: "12.6",
+      impactFactor: "5.3",
+    },
   },
   {
     title: "Hyperseed: Unsupervised Learning With Vector Symbolic Architectures",
@@ -268,6 +278,11 @@ export const featuredPublications = [
     description:
       "Vector Symbolic Architecture research for unsupervised learning and topology-preserving feature representation.",
     tags: ["VSA", "Unsupervised Learning", "Hyperdimensional Computing"],
+    url: "https://ieeexplore.ieee.org/document/9953974/",
+    metrics: {
+      citeScore: "20.8",
+      impactFactor: "9.7",
+    },
   },
 ] as const;
 
