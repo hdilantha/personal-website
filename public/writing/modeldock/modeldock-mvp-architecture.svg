@@ -1,0 +1,62 @@
+<svg width="1400" height="1040" viewBox="0 0 1400 1040" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ModelDock MVP architecture</title>
+  <desc id="desc">Simple stacked box diagram showing Next.js UI flowing to FastAPI backend, SQLite database, Ollama local runtime, and a local model.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="18" markerHeight="18" refX="9" refY="9" orient="auto" markerUnits="strokeWidth">
+      <path d="M4 3L10 9L4 15" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .title {
+        fill: #0f172a;
+        font: 700 42px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .label {
+        fill: #0f172a;
+        font: 700 34px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .note {
+        fill: #64748b;
+        font: 500 22px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+    </style>
+  </defs>
+
+  <rect width="1400" height="1040" rx="32" fill="#F7FBFF"/>
+  <rect x="70" y="70" width="1260" height="900" rx="28" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="2"/>
+
+  <text x="700" y="145" text-anchor="middle" class="title">ModelDock MVP Architecture</text>
+  <text x="700" y="183" text-anchor="middle" class="note">A local-first control plane for small LLM workflows</text>
+
+  <g>
+    <rect x="390" y="240" width="620" height="86" rx="16" fill="#FFFFFF" stroke="#38BDF8" stroke-width="3"/>
+    <text x="700" y="295" text-anchor="middle" class="label">Next.js UI</text>
+  </g>
+
+  <path d="M700 338V390" stroke="#0284C7" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="390" y="402" width="620" height="86" rx="16" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/>
+    <text x="700" y="457" text-anchor="middle" class="label">FastAPI backend</text>
+  </g>
+
+  <path d="M700 500V552" stroke="#0284C7" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="390" y="564" width="620" height="86" rx="16" fill="#FFFFFF" stroke="#38BDF8" stroke-width="3"/>
+    <text x="700" y="619" text-anchor="middle" class="label">SQLite database</text>
+  </g>
+
+  <path d="M700 662V714" stroke="#0284C7" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="390" y="726" width="620" height="86" rx="16" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/>
+    <text x="700" y="781" text-anchor="middle" class="label">Ollama runtime</text>
+  </g>
+
+  <path d="M700 824V876" stroke="#0284C7" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="390" y="888" width="620" height="86" rx="16" fill="#FFFFFF" stroke="#38BDF8" stroke-width="3"/>
+    <text x="700" y="943" text-anchor="middle" class="label">Local model</text>
+  </g>
+</svg>

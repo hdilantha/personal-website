@@ -1,0 +1,204 @@
+---
+title: "Building ModelDock: A Local-First Platform for Small LLM Training and Deployment"
+description: "The first post in a development series about building ModelDock, a local-first LLM management platform for fine-tuning, deploying, chatting with, and monitoring small language models."
+published: 2026-07-05
+category: "AI Engineering"
+readTime: "5 min read"
+tags: ["LLM", "Local AI", "Ollama", "MLX", "AI Engineering", "ModelDock"]
+coverImage: "/writing/modeldock/modeldock-local-llm-platform.png"
+coverAlt: "A local-first LLM platform interface showing models, deployments, monitoring, and chat running on a laptop"
+featured: true
+draft: false
+---
+
+Large language models are becoming easier to use, but managing them locally is still messy.
+
+If I want to run a model on my laptop today, I can use tools like Ollama, LM Studio, llama.cpp, MLX, or text-generation-webui. These tools are useful, but the workflow is still fragmented.
+
+One tool runs the model. Another tool gives me a chat interface. Another handles fine-tuning. Another logs requests. Another exposes an API. If I want something closer to a proper development platform, I usually need to connect these pieces myself.
+
+That made me think about a simple question:
+
+**What would a local-first version of Azure AI Foundry look like for small LLMs?**
+
+That is the starting point for **ModelDock**.
+
+## The idea
+
+ModelDock is an experimental platform for managing small language models from a clean web UI.
+
+The goal is not to build a new machine learning framework from scratch. There are already strong tools for running and fine-tuning local models. Instead, ModelDock is intended to sit above those tools as a lightweight control plane.
+
+The basic idea is:
+
+- Select a local model
+- Connect local compute, such as a laptop or workstation
+- Deploy the model locally
+- Use it through a chat playground
+- Expose it through an OpenAI-compatible API
+- Monitor requests, tokens, latency, and usage
+- Later, support fine-tuning and model versioning
+
+In simple terms, I want ModelDock to become a local LLM management platform for small models.
+
+Not a chatbot app.
+
+Not a model framework.
+
+More like a small local LLMOps platform.
+
+## Why local-first?
+
+A lot of AI development now depends on cloud platforms. That makes sense for large-scale production systems, but not every experiment needs cloud infrastructure.
+
+For many use cases, local-first development is enough:
+
+- Testing small open-source models
+- Building prototypes
+- Experimenting with prompts
+- Fine-tuning small models
+- Working with private data
+- Learning how model deployment works
+- Running models without ongoing API costs
+
+Modern laptops, especially Apple Silicon machines, are also becoming more capable for local AI workloads. Small models are good enough for many practical tasks, and tools like Ollama and MLX have made local inference much easier.
+
+But the developer experience still feels incomplete.
+
+I want a simple UI where I can see what models I have, what is deployed, how many requests are being made, how many tokens are being processed, and which model is responding.
+
+That is the gap ModelDock is trying to explore.
+
+## What already exists?
+
+There are already great tools in this space.
+
+Ollama makes it very easy to pull and run local models. LM Studio gives a polished desktop experience for chatting with local models. Open WebUI provides a strong web interface. LLaMA Factory and H2O LLM Studio support fine-tuning workflows. MLX and mlx-lm are very interesting for Apple Silicon.
+
+But these tools usually focus on one part of the workflow.
+
+For example:
+
+- Ollama is great for running models
+- LM Studio is great for local inference and chat
+- Open WebUI is great as a model interaction interface
+- LLaMA Factory is great for fine-tuning
+- MLX is great for Apple Silicon model work
+- Langfuse-style tools are useful for tracing and monitoring
+
+The full lifecycle is still split across multiple places.
+
+ModelDock is my attempt to bring the common workflow together in one local-first platform.
+
+## The first MVP
+
+The first version of ModelDock will be intentionally small.
+
+I do not want to overbuild it at the start. The goal is to build a working foundation first, then improve it step by step.
+
+The first MVP will include:
+
+- A web dashboard
+- Model registration
+- Ollama integration
+- Local deployment management
+- A chat playground
+- An OpenAI-compatible `/v1/chat/completions` endpoint
+- Request logging
+- Basic token usage tracking
+- Latency monitoring
+- Local settings
+
+For the first version, Ollama will be the main runtime. That keeps the scope manageable, because Ollama already handles the actual model execution.
+
+ModelDock will manage the surrounding workflow.
+
+The stack I am planning to use is:
+
+- Next.js and TypeScript for the frontend
+- Tailwind CSS for the UI
+- FastAPI for the backend
+- SQLite for local persistence
+- Ollama as the first model runtime
+
+The first version will not try to perform full training or fine-tuning yet. That will come later.
+
+## How the architecture may look
+
+The rough architecture is simple:
+
+<figure>
+  <img src="/writing/modeldock/modeldock-mvp-architecture.svg" alt="ModelDock MVP architecture diagram showing a Next.js UI connected to a FastAPI backend, SQLite database, Ollama local runtime, and local model" />
+  <figcaption>ModelDock MVP architecture: a local-first control plane around a web UI, backend API, local database, Ollama runtime, and small local model.</figcaption>
+</figure>
+
+The frontend will provide the user interface.
+
+The backend will handle model records, deployments, settings, monitoring logs, and API requests.
+
+Ollama will handle the actual model inference.
+
+SQLite is enough for the first local version. It keeps setup simple and avoids unnecessary infrastructure.
+
+The OpenAI-compatible endpoint is important because it makes the deployed local model usable from existing tools and SDKs. If ModelDock exposes a local `/v1/chat/completions` endpoint, then other applications can treat it like a small local OpenAI-style server.
+
+That makes it useful beyond the built-in chat playground.
+
+## What I want ModelDock to become
+
+The longer-term vision is bigger than just running a model locally.
+
+Eventually, I want ModelDock to support:
+
+- Local fine-tuning jobs
+- MLX support for Apple Silicon
+- LoRA adapter management
+- Dataset upload and validation
+- Model versioning
+- Prompt and response tracing
+- Evaluation workflows
+- Hardware-aware model recommendations
+- Export to formats such as GGUF or Ollama-compatible models
+- Deployment profiles for different machines
+
+For example, a user should be able to upload a small instruction dataset, fine-tune a compact model, deploy it locally, test it in a chat window, and then call it from an application using an API.
+
+That workflow should not require jumping between five different tools.
+
+## What makes this interesting to me
+
+I am interested in the engineering layer around AI models.
+
+The model itself is only one part of the system. In practice, a useful AI application also needs deployment, monitoring, versioning, data handling, evaluation, and a clean interface for users.
+
+That is what makes this project interesting.
+
+It connects several areas I care about:
+
+- Local AI
+- LLM deployment
+- Small model experimentation
+- Practical AI engineering
+- Developer tooling
+- Model monitoring
+- Efficient AI systems
+
+It also fits well with the direction AI development is moving. Not every AI workload needs to run in the cloud. There is real value in smaller, local, private, and efficient model workflows.
+
+## What comes next
+
+This is the first post in what I expect to become a development series.
+
+The next steps are to build the initial repo, implement the backend, create the frontend layout, connect to Ollama, and get the first local chat deployment working.
+
+After that, I will start adding monitoring, the OpenAI-compatible API, and better model/deployment management.
+
+The first version will probably be rough. That is fine.
+
+The point is to build a working foundation and improve it in public.
+
+ModelDock starts as a simple idea:
+
+**A local-first platform to train, deploy, chat with, and monitor small LLMs from one clean UI.**
+
+Let’s see where it goes.
